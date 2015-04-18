@@ -69,8 +69,14 @@ Here are some standard links for getting your machine calibrated:
 #endif
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 // Define this to set a custom name for your generic Mendel,
 #define CUSTOM_MENDEL_NAME "thirt13n"
+=======
+// Optional custom name for your RepStrap or other custom machine
+// Displayed in the LCD "Ready" message
+// #define CUSTOM_MACHINE_NAME "3D Printer"
+>>>>>>> a4ca87ba9919f07404a55061611fa909db1bee1d
 =======
 // Optional custom name for your RepStrap or other custom machine
 // Displayed in the LCD "Ready" message

@@ -6,11 +6,11 @@
 * When selecting the Russian language, a slightly different LCD implementation is used to handle UTF8 characters.
 **/
 
-#ifndef REPRAPWORLD_KEYPAD
-  extern volatile uint8_t buttons;  //the last checked buttons in a bit array.
-#else
-  extern volatile uint16_t buttons;  //an extended version of the last checked buttons in a bit array.
-#endif
+//#ifndef REPRAPWORLD_KEYPAD
+//  extern volatile uint8_t buttons;  //the last checked buttons in a bit array.
+//#else
+  extern volatile uint8_t buttons;  //an extended version of the last checked buttons in a bit array.
+//#endif
 
 ////////////////////////////////////
 // Setup button and encode mappings for each panel (into 'buttons' variable
@@ -77,13 +77,13 @@
     #define BLEN_REPRAPWORLD_KEYPAD_F3 0
     #define BLEN_REPRAPWORLD_KEYPAD_F2 1
     #define BLEN_REPRAPWORLD_KEYPAD_F1 2
-    #define BLEN_REPRAPWORLD_KEYPAD_UP 3
+    #define BLEN_REPRAPWORLD_KEYPAD_UP 6
     #define BLEN_REPRAPWORLD_KEYPAD_RIGHT 4
     #define BLEN_REPRAPWORLD_KEYPAD_MIDDLE 5
-    #define BLEN_REPRAPWORLD_KEYPAD_DOWN 6
+    #define BLEN_REPRAPWORLD_KEYPAD_DOWN 3
     #define BLEN_REPRAPWORLD_KEYPAD_LEFT 7
     
-    #define REPRAPWORLD_BTN_OFFSET 3 // bit offset into buttons for shift register values
+    #define REPRAPWORLD_BTN_OFFSET 0 // bit offset into buttons for shift register values
 
     #define EN_REPRAPWORLD_KEYPAD_F3 BIT((BLEN_REPRAPWORLD_KEYPAD_F3+REPRAPWORLD_BTN_OFFSET))
     #define EN_REPRAPWORLD_KEYPAD_F2 BIT((BLEN_REPRAPWORLD_KEYPAD_F2+REPRAPWORLD_BTN_OFFSET))
@@ -94,10 +94,10 @@
     #define EN_REPRAPWORLD_KEYPAD_DOWN BIT((BLEN_REPRAPWORLD_KEYPAD_DOWN+REPRAPWORLD_BTN_OFFSET))
     #define EN_REPRAPWORLD_KEYPAD_LEFT BIT((BLEN_REPRAPWORLD_KEYPAD_LEFT+REPRAPWORLD_BTN_OFFSET))
 
-    #define LCD_CLICKED ((buttons&EN_C) || (buttons&EN_REPRAPWORLD_KEYPAD_F1))
-    #define REPRAPWORLD_KEYPAD_MOVE_Y_DOWN (buttons&EN_REPRAPWORLD_KEYPAD_DOWN)
-    #define REPRAPWORLD_KEYPAD_MOVE_Y_UP (buttons&EN_REPRAPWORLD_KEYPAD_UP)
-    #define REPRAPWORLD_KEYPAD_MOVE_HOME (buttons&EN_REPRAPWORLD_KEYPAD_MIDDLE)
+    //#define LCD_CLICKED ((buttons&EN_C) || (buttons&EN_REPRAPWORLD_KEYPAD_F1))
+    //#define REPRAPWORLD_KEYPAD_MOVE_Y_DOWN (buttons&EN_REPRAPWORLD_KEYPAD_DOWN)
+    //#define REPRAPWORLD_KEYPAD_MOVE_Y_UP (buttons&EN_REPRAPWORLD_KEYPAD_UP)
+    //#define REPRAPWORLD_KEYPAD_MOVE_HOME (buttons&EN_REPRAPWORLD_KEYPAD_MIDDLE)
 
 #elif defined(NEWPANEL)
   #define LCD_CLICKED (buttons&EN_C)
@@ -194,9 +194,9 @@
 #include "utf_mapper.h"
 
 #ifdef LCD_PROGRESS_BAR
-  static uint16_t progressBarTick = 0;
+  static millis_t progress_bar_ms = 0;
   #if PROGRESS_MSG_EXPIRE > 0
-    static uint16_t expireStatusMillis = 0;
+    static millis_t expire_status_ms = 0;
   #endif
   #define LCD_STR_PROGRESS  "\x03\x04\x05"
 #endif
@@ -588,8 +588,9 @@ static void lcd_implementation_status_screen() {
   #ifdef LCD_PROGRESS_BAR
 
     if (card.isFileOpen()) {
-      if (millis() >= progressBarTick + PROGRESS_BAR_MSG_TIME || !lcd_status_message[0]) {
-        // draw the progress bar
+      // Draw the progress bar if the message has shown long enough
+      // or if there is no message set.
+      if (millis() >= progress_bar_ms + PROGRESS_BAR_MSG_TIME || !lcd_status_message[0]) {
         int tix = (int)(card.percentDone() * LCD_WIDTH * 3) / 100,
           cel = tix / 3, rem = tix % 3, i = LCD_WIDTH;
         char msg[LCD_WIDTH+1], b = ' ';
